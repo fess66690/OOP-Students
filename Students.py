@@ -19,19 +19,22 @@ class Student:
         else:
             return 'Ошибка'
 
-
-
-    def __str__ (self, sum_rate=0, len_rate = 0):
+    @property
+    def average_score (self, sum_rate=0, len_rate = 0):
         for key, grad in enumerate(self.grades):
             sum_rate += sum(self.grades[grad])
             len_rate += len(self.grades[grad])
+            average_score = sum_rate/len_rate
+        return average_score
+
+    def __str__ (self):
         return (f'Имя: {self.name} \n'
                f'Фамилия: {self.surname} \n'
-               f'Средняя оценка за домашние задания: {sum_rate/len_rate} \n'
+               f'Средняя оценка за домашние задания: {self.average_score} \n'
                f'Курсы в процессе изучения: {", ".join(self.courses_in_progress)}\n'
                f'Завершенные курсы: {", ".join(self.finished_courses)}')
 
-    def __eq__(self, other):
+    # def __eq__(self, other):
 
 
 class Mentor:
