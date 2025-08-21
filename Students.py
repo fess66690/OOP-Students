@@ -1,6 +1,5 @@
 from tkinter.font import names
 
-
 class Student:
     def __init__(self, name, surname, gender):
         self.name = name
@@ -24,8 +23,8 @@ class Student:
         for key, grad in enumerate(self.grades):
             sum_rate += sum(self.grades[grad])
             len_rate += len(self.grades[grad])
-            average_score = sum_rate/len_rate
-        return average_score
+            average = sum_rate/len_rate
+        return average
 
     def __str__ (self):
         return (f'Имя: {self.name} \n'
@@ -34,8 +33,10 @@ class Student:
                f'Курсы в процессе изучения: {", ".join(self.courses_in_progress)}\n'
                f'Завершенные курсы: {", ".join(self.finished_courses)}')
 
-    # def __eq__(self, other):
-
+    def __eq__(self, other):
+        return self.average_score == other.average_score
+    def __lt__(self, other):
+        return self.average_score < other.average_score
 
 class Mentor:
     def __init__(self, name, surname):
@@ -49,12 +50,22 @@ class Lecturer (Mentor):
         self.grades = {}
 
     def __str__ (self, sum_rate=0, len_rate = 0):
+        return (f'Имя: {self.name} \n'
+               f'Фамилия: {self.surname} \n'
+               f'Средняя оценка за домашние лекции: {self.average_score}')
+
+    @property
+    def average_score(self, sum_rate=0, len_rate=0):
         for key, grad in enumerate(self.grades):
             sum_rate += sum(self.grades[grad])
             len_rate += len(self.grades[grad])
-        return (f'Имя: {self.name} \n'
-               f'Фамилия: {self.surname} \n'
-               f'Средняя оценка за домашние лекции: {sum_rate/len_rate}')
+            average = sum_rate / len_rate
+        return average
+
+    def __eq__(self, other):
+        return self.average_score == other.average_score
+    def __lt__(self, other):
+        return self.average_score < other.average_score
 
 class Reviewer (Mentor):
     def __init__(self, name, surname):
@@ -73,26 +84,72 @@ class Reviewer (Mentor):
         else:
             return 'Ошибка'
 
-lecturer = Lecturer('Иван', 'Иванов')
-reviewer = Reviewer('Пётр', 'Петров')
-student = Student('Алёхина', 'Ольга', 'Ж')
+def average_homework_grade(students, course_name):
+    total_sum = 0
+    total_count = 0
 
-student.courses_in_progress += ['Python', 'Java']
-lecturer.courses_attached += ['Python', 'C++']
-reviewer.courses_attached += ['Python', 'C++']
+    for student in students:
+        if course_name in student.grades:
+            total_sum += sum(student.grades[course_name])
+            total_count += len(student.grades[course_name])
 
-print(student.rate_lecture(lecturer, 'Python', 7))  # None
-print(student.rate_lecture(lecturer, 'Java', 8))  # Ошибка
-print(student.rate_lecture(lecturer, 'С++', 8))  # Ошибка
-print(student.rate_lecture(reviewer, 'Python', 6))  # Ошибка
-print(lecturer.grades)  # {'Python': [7]}
+    if total_count == 0:
+        return 0
 
-reviewer.rate_hw(student, 'Python', 8)
-reviewer.rate_hw(student, 'Python', 6)
-student.courses_in_progress +=['C++']
-student.finished_courses+=['Pascal']
-reviewer.rate_hw(student, 'C++', 10)
+    return round(total_sum / total_count, 1)
 
-print(student)
-print(lecturer)
-print(reviewer)
+
+def average_lecture_grade(lecturers, course_name):
+    total_sum = 0
+    total_count = 0
+
+    for lecturer in lecturers:
+        if course_name in lecturer.grades:
+            total_sum += sum(lecturer.grades[course_name])
+            total_count += len(lecturer.grades[course_name])
+
+    if total_count == 0:
+        return 0
+
+    return round(total_sum / total_count, 1)
+
+
+
+student1 = Student("Иван", "Иванов", "М")
+student2 = Student("Светлана", "Лютик", "Ж")
+
+reviewer1 = Reviewer("Первый", "Профессор")
+reviewer2 = Reviewer("Второй", "Профессор")
+
+lecturer1 = Lecturer ("Первый", "Лектор")
+lecturer2 = Lecturer ("Второй", "Лектор")
+
+student1.courses_in_progress += ['Python', 'C++']
+student2.courses_in_progress += ['Python', 'Java']
+lecturer1.courses_attached += ['Python', 'C++']
+lecturer2.courses_attached += ['Python', 'Java']
+reviewer1.courses_attached += ['Python', 'C++']
+reviewer2.courses_attached += ['Python', 'Java']
+
+reviewer1.rate_hw(student1,'C++', 10)
+reviewer2.rate_hw(student1,'Python', 2)
+
+reviewer1.rate_hw(student2,'Python', 10)
+reviewer2.rate_hw(student2,'Java', 2)
+
+student1.rate_lecture(lecturer1,"C++", 8)
+student2.rate_lecture(lecturer1, 'Python', 4)
+student1.rate_lecture(lecturer2,"Python", 10)
+student2.rate_lecture(lecturer2, 'Java', 10)
+
+print(student1)
+print(student2)
+print(lecturer1)
+print(lecturer2)
+print(reviewer1)
+print(reviewer2)
+print(student2 == student1)
+print(lecturer2 > lecturer1)
+print(average_homework_grade([student1,student2], 'Python'))
+print(average_lecture_grade([lecturer1,lecturer2], 'Python'))
+print(average_lecture_grade([lecturer1,lecturer2], 'Java'))
