@@ -1,6 +1,8 @@
 from tkinter.font import names
 
+
 class Student:
+
     def __init__(self, name, surname, gender):
         self.name = name
         self.surname = surname
@@ -35,8 +37,10 @@ class Student:
 
     def __eq__(self, other):
         return self.average_score == other.average_score
+
     def __lt__(self, other):
         return self.average_score < other.average_score
+
 
 class Mentor:
     def __init__(self, name, surname):
@@ -44,7 +48,9 @@ class Mentor:
         self.surname = surname
         self.courses_attached = []
 
+
 class Lecturer (Mentor):
+
     def __init__(self, name, surname):
         super().__init__(name, surname)
         self.grades = {}
